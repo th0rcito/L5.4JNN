@@ -16,7 +16,7 @@ class PizzaController extends Controller
     {
       return view("pizzas.index",
       [
-          "pizzas"=> Pizza::withTrashed()->where('user_id', auth()->user()->id)->paginate(2)
+          "pizzas"=> Pizza::withTrashed()->where('user_id', auth()->user()->id)->paginate(5)
       ]
     );
     }
@@ -28,7 +28,8 @@ class PizzaController extends Controller
      */
     public function create()
     {
-        //
+        $pizza=new Pizza;
+        return view('pizzas.create',['pizza'=>$pizza]);
     }
 
     /**
@@ -39,7 +40,7 @@ class PizzaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->input());
     }
 
     /**
@@ -83,6 +84,11 @@ class PizzaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
+    {
+        //
+    }
+
+    public function restore($id)
     {
         //
     }
