@@ -40,7 +40,21 @@ class PizzaController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->input());
+      $this->validate(
+        $request,
+        [
+          'name'=>'required|unique:pizzas|max:255',
+          'price'=>'required',
+          'description'=>'required'
+        ],
+        //mensaje de campos
+        [
+          'name.required'=>'Es requerido',
+          'name.unique'=>'Es unico'
+        ]
+      );
+      Pizza::create($request->input());
+      return redirect('pizzas')->with('message','Pizza Creada');
     }
 
     /**
@@ -62,7 +76,8 @@ class PizzaController extends Controller
      */
     public function edit($id)
     {
-        //
+      $pizza = Pizza::findOrFail($id);
+      return view('pizzas.edit',['pizza'=>$pizza]);
     }
 
     /**
@@ -74,7 +89,24 @@ class PizzaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $this->validate(
+        $request,
+        [
+          'name'=>"required|max:255|unique:pizzas,name,{$request->input($id)}",
+          'price'=>'required',
+          'description'=>'required'
+        ],
+        //mensaje de campos
+        [
+          'name.required'=>'Es requerido',
+          'name.unique'=>'Es unico'
+        ]
+      );
+      $pizza = Pizza::find($id);
+      $oldPizza = $pizza->name;
+      $pizza->fill($request->all())->save();
+      return redirect('pizzas')->with('message',"Pizza actualizada $oldPizza A $pizza->name");
+
     }
 
     /**
@@ -85,11 +117,14 @@ class PizzaController extends Controller
      */
     public function destroy($id)
     {
-        //
+      Pizza::destroy($id);
+      return redirect('pizzas')->with('message','Pizza Eliminada');
     }
 
     public function restore($id)
     {
-        //
+      Pizza::withTrashed()->find($id)->restore();
+      return redirect('pizzas')->with('message','Pizza Restaurada');
+
     }
 }
